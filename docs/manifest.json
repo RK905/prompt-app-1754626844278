@@ -1,0 +1,60 @@
+{
+  "name": "SimpleCalc — A minimal calculator",
+  "short_name": "Calc",
+  "description": "A simple, fast calculator for basic arithmetic: add, subtract, multiply, divide — with memory and history. Lightweight, offline-capable, and designed for quick use.",
+  "lang": "en-US",
+  "start_url": "/calculator?homescreen=true",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f5f7fa",
+  "theme_color": "#2b2f3a",
+  "orientation": "portrait-primary",
+  "categories": [
+    "utilities",
+    "productivity"
+  ],
+  "shortcuts": [
+    {
+      "name": "New Calculation",
+      "short_name": "New",
+      "description": "Open a fresh calculator session",
+      "url": "/calculator"
+    },
+    {
+      "name": "History",
+      "short_name": "History",
+      "description": "View recent calculations",
+      "url": "/calculator/history"
+    },
+    {
+      "name": "Memory",
+      "short_name": "Memory",
+      "description": "Access memory slots",
+      "url": "/calculator/memory"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/screenshots/calc-1.png",
+      "sizes": "640x480",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/screenshots/calc-2.png",
+      "sizes": "640x480",
+      "type": "image/png"
+    }
+  ],
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0i24iIGZpbGw9IiNmNWY3ZmEiLz4KPHJlY3QgeD0iMjQiIHk9IjIwIiB3aWR0aD0iMTQ0IiBoZWlnaHQ9IjQ0IiByeD0iNyIgZmlsbD0iIzJiMmYzYSIvPgo8cmVjdCB4PSIyNCIgeT0iNjgiIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiIgcng9IjYiIGZpbGw9IiNlNmU5ZWYiLz4KPHJlY3QgeD0iNjQiIHk9IjY4IiB3aWR0aD0iMzYiIGhlaWdodD0iMzYiIHJ4PSI2IiBmaWxsPSIjZTZlOWVmIi8+CjxyZWN0IHg9IjEwNCIgeT0iNjgiIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiIgcng9IjYiIGZpbGw9IiNlNmU5ZWYiLz4KPHJlY3QgeD0iMTQ0IiB5PSI2OCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjM2IiByeD0iNiIgZmlsbD0iI2ZmOWYxYyIvPgo8cmVjdCB4PSIyNCIgeT0iMTEyIiB3aWR0aD0iMzYiIGhlaWdodD0iMzYiIHJ4PSI2IiBmaWxsPSIjZTZlOWVmIi8+CjxyZWN0IHg9IjY0IiB5PSIxMTIiIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiIgcng9IjYiIGZpbGw9IiNlNmU5ZWYiLz4KPHJlY3QgeD0iMTA0IiB5PSIxMTIiIHdpZHRoPSIzNiIgaGVpZ2h0PSIzNiIgcng9IjYiIGZpbGw9IiNlNmU5ZWYiLz4KPHRleHQgeD0iMzQiIHk9IjQwIiBmaWxsPSIjZmZmIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiPkM8L3RleHQ+Cjwvc3ZnPgo=",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iNjQiIGZpbGw9IiNmNWY3ZmEiLz4KPHJlY3QgeD0iNjQiIHk9IjUyIiB3aWR0aD0iNDg0IiBoZWlnaHQ9IjEyOCIgcng9IjQiIGZpbGw9IiMyYjJmM2EiLz4KPHJlY3QgeD0iNjQiIHk9IjE5MiIiIHdpZHRoPSIyOSIgaGVpZ2h0PSIyOSIgZmlsbD0iI2Y1ZjdmYSIvPgo8cmVjdCB4PSI2NCIgeT0iMTMzIiB3aWR0aD0iODQiIGhlaWdodD0iODQiIHJ4PSIxMCIgZmlsbD0iI2IyYjJkZCIvPgo8dGV4dCB4PSI1MCUiIHk9IjIwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJBaXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTI4Ij5DPC90ZXh0Pgo8L3N2Zz4K",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
