@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Simple Calculator</title>
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="manifest" href="manifest.json">
+    <link href="style.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-b from-slate-50 to-slate-100 text-slate-900 min-h-screen">
+    <div id="app" class="container mx-auto px-4 py-8">
+        <header class="max-w-md mx-auto mb-6 flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold">Simple Calculator</h1>
+                <p class="text-sm text-slate-500">Quick, offline-ready arithmetic — add, subtract, multiply, divide.</p>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button id="installBtn" class="hidden px-3 py-1.5 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700 focus:outline-none" aria-hidden="false">Install</button>
+                <span id="network" class="inline-flex items-center text-xs px-2 py-1 rounded-md bg-green-100 text-green-800">Online</span>
+            </div>
+        </header>
+
+        <main class="max-w-md mx-auto bg-white rounded-xl shadow-lg p-4">
+            <section class="mb-3">
+                <div id="history" class="text-right text-xs text-slate-400 min-h-[1rem] px-2 break-words"></div>
+                <div id="display" class="text-right font-mono text-3xl sm:text-4xl leading-tight py-3 px-3 bg-slate-50 rounded-md border border-slate-100 break-words" role="status" aria-live="polite">0</div>
+            </section>
+
+            <section class="grid grid-cols-4 gap-3">
+                <!-- Row 1 -->
+                <button class="calc-btn bg-slate-100 text-slate-800 font-medium py-3 rounded" data-action="clear" aria-label="All Clear">AC</button>
+                <button class="calc-btn bg-slate-100 text-slate-800 font-medium py-3 rounded" data-action="delete" aria-label="Delete">DEL</button>
+                <button class="calc-btn bg-slate-100 text-slate-800 font-medium py-3 rounded" data-action="percent" aria-label="Percent">%</button>
+                <button class="calc-btn bg-amber-100 text-amber-800 font-semibold py-3 rounded" data-value="/" aria-label="Divide">/</button>
+
+                <!-- Row 2 -->
+                <button class="calc-btn bg-white text-slate-900 py-3 rounded" data-value="7" aria-label="Seven">7</button>
+                <button class="calc-btn bg-white text-slate-900 py-3 rounded" data-value="8" aria-label="Eight">8</button>
+                <button class="calc-btn bg-white text-slate-900 py-3 rounded" data-value="9" aria-label="Nine">9</button>
+                <button class="calc-btn bg-amber-100 text-amber-800 font-semibold py-3 rounded" data-value="*" aria-label="Multiply">*</button>
+
+                <!-- Row 3 -->
+                <button class="calc-btn bg-white text-slate-900 py-3 rounded" data-value="4" aria-label="Four">4</button>
+                <button class="calc-btn bg-white text-slate-900 py-3 rounded" data-value="5" aria-label="Five">5</button>
+                <button class="calc-btn bg-white text-slate-900 py-3 rounded" data-value="6" aria-label="Six">6</button>
+                <button class="calc-btn bg-amber-100 text-amber-800 font-semibold py-3 rounded" data-value="-" aria-label="Subtract">-</button>
+
+                <!-- Row 4 -->
+                <button class="calc-btn bg-white text-slate-900 py-3 rounded" data-value="1" aria-label="One">1</button>
+                <button class="calc-btn bg-white text-slate-900 py-3 rounded" data-value="2" aria-label="Two">2</button>
+                <button class="calc-btn bg-white text-slate-900 py-3 rounded" data-value="3" aria-label="Three">3</button>
+                <button class="calc-btn bg-amber-100 text-amber-800 font-semibold py-3 rounded" data-value="+" aria-label="Add">+</button>
+
+                <!-- Row 5 -->
+                <button class="calc-btn col-span-2 bg-white text-slate-900 py-3 rounded" data-value="0" aria-label="Zero">0</button>
+                <button class="calc-btn bg-white text-slate-900 py-3 rounded" data-value="." aria-label="Decimal">.</button>
+                <button class="calc-btn bg-indigo-600 text-white font-semibold py-3 rounded" data-action="equals" aria-label="Equals">=</button>
+            </section>
+
+            <footer class="mt-4 text-xs text-slate-500">
+                Tip: Use keyboard for quick input. Press Enter to evaluate, Backspace to delete.
+            </footer>
+        </main>
+
+        <div class="max-w-md mx-auto mt-4 text-center text-xs text-slate-400">
+            <p>Offline-available via service worker. Created as a lightweight PWA.</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+    <script>
+    // Calculator logic + PWA install + service worker registration + network status
+    (function () {
+        const displayEl = document.getElementById('display');
+        const historyEl = document.getElementById('history');
+        const networkEl = document.getElementById('network');
+        const installBtn = document.getElementById('installBtn');
+
+        let current = '';
+        let lastResult = '';
+        let deferredPrompt = null;
+
+        // Helpers
+        function updateDisplay() {
+            displayEl.textContent = current || '0';
+        }
+        function setHistory(text) {
+            historyEl.textContent = text || '';
+        }
+        function appendInput(val) {
+            // Prevent multiple leading zeros
+            if (current === '0' && val === '0') return;
+            if (current === '0' && val !== '.' && /\d/.test(val)) current = val;
+            else current += val;
+            updateDisplay();
+        }
+        function clearAll() {
+            current = '';
+            lastResult = '';
+            setHistory('');
+            updateDisplay();
+        }
+        function deleteLast() {
+            current = current.slice(0, -1);
+            updateDisplay();
+        }
+
+        function handlePercent() {
+            // Convert the last number in the expression to percentage (divide by 100)
+            // Find last number
+            const re = /(\d+(\.\d+)?)$/;
+            const match = current.match(re);
+            if (match) {
+                const num = parseFloat(match[1]);
+                const replaced = (num / 100).toString();
+                current = current.replace(re, replaced);
+                updateDisplay();
+            }
+        }
+
+        function sanitizeExpression(expr) {
+            // Allow digits, operators + - * / . ( ) and spaces
+            const allowed = /^[0-9+\-*/().\s%]+$/;
+            if (!allowed.test(expr)) return null;
+            return expr;
+        }
+
+        function evaluateExpression() {
+            if (!current) return;
+            const expr = current.replace(/%/g, '/100'); // simple percent handling if typed
+            const sanitized = sanitizeExpression(expr);
+            if (!sanitized) {
+                displayError('Invalid input');
+                return;
+            }
+            try {
+                // Evaluate safely
+                // eslint-disable-next-line no-new-func
+                const result = Function('"use strict"; return (' + sanitized + ')')();
+                if (result === Infinity || Number.isNaN(result)) throw new Error('Math error');
+                const rounded = parseFloat(String(result.toFixed(12))); // limit precision
+                setHistory(current + ' =');
+                current = String(rounded);
+                lastResult = current;
+                updateDisplay();
+            } catch (e) {
+                displayError('Error');
+            }
+        }
+
+        function displayError(msg) {
+            const prev = displayEl.textContent;
+            displayEl.textContent = msg;
+            setTimeout(() => {
+                displayEl.textContent = current || '0';
+            }, 900);
+        }
+
+        // Button handling
+        document.querySelectorAll('.calc-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const val = btn.getAttribute('data-value');
+                const action = btn.getAttribute('data-action');
+
+                if (action === 'clear') {
+                    clearAll();
+                    return;
+                }
+                if (action === 'delete') {
+                    deleteLast();
+                    return;
+                }
+                if (action === 'percent') {
+                    handlePercent();
+                    return;
+                }
+                if (action === 'equals') {
+                    evaluateExpression();
+                    return;
+                }
+                if (val) {
+                    // prevent invalid multiple dots in last number
+                    if (val === '.') {
+                        const lastNum = current.match(/(\d+(\.\d+)?)$/);
+                        if (lastNum && lastNum[0].includes('.')) return;
+                        if (current === '' || /[+\-*/(]$/.test(current)) current += '0';
+                    }
+                    appendInput(val);
+                }
+            });
+        });
+
+        // Keyboard support
+        window.addEventListener('keydown', (e) => {
+            if ((e.key >= '0' && e.key <= '9') || ['+', '-', '*', '/', '(', ')', '.'].includes(e.key)) {
+                e.preventDefault();
+                appendInput(e.key);
+                return;
+            }
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                evaluateExpression();
+                return;
+            }
+            if (e.key === 'Backspace') {
+                e.preventDefault();
+                deleteLast();
+                return;
+            }
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                clearAll();
+                return;
+            }
+            if (e.key === '%') {
+                e.preventDefault();
+                handlePercent();
+                return;
+            }
+        });
+
+        // Network status
+        function updateNetworkStatus() {
+            if (navigator.onLine) {
+                networkEl.textContent = 'Online';
+                networkEl.className = 'inline-flex items-center text-xs px-2 py-1 rounded-md bg-green-100 text-green-800';
+            } else {
+                networkEl.textContent = 'Offline';
+                networkEl.className = 'inline-flex items-center text-xs px-2 py-1 rounded-md bg-red-100 text-red-800';
+            }
+        }
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+        updateNetworkStatus();
+
+        // Service worker registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(() => {
+                console.log('Service worker registered');
+            }).catch(err => {
+                console.warn('SW registration failed:', err);
+            });
+        }
+
+        // PWA install prompt handling
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.classList.remove('hidden');
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const choice = await deferredPrompt.userChoice;
+            if (choice.outcome === 'accepted') {
+                installBtn.textContent = 'Installed';
+                installBtn.disabled = true;
+            }
+            deferredPrompt = null;
+            installBtn.classList.add('hidden');
+        });
+
+        // quick init
+        updateDisplay();
+    })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+/* Custom styles for your PWA */
+/* Tailwind CSS is loaded via CDN, so you can use utility classes */
+
+/* Custom animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Color system using CSS variables for easy themeing */
+:root {
+    --bg: #f8fafc; /* slate-50 */
+    --surface: #ffffff; /* white */
+    --muted: #6b7280; /* gray-500 */
+    --primary: #0ea5e9; /* sky-500 */
+    --primary-dark: #0369a1; /* sky-700 */
+    --accent: #7c3aed; /* violet-600 */
+    --danger: #ef4444; /* red-500 */
+    --glass: rgba(255,255,255,0.6);
+    --shadow: 0 6px 18px rgba(15,23,42,0.08);
+    --radius: 14px;
+    --display-font: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #0b1220; /* near black */
+        --surface: rgba(255,255,255,0.03);
+        --muted: #9ca3af;
+        --primary: #06b6d4;
+        --primary-dark: #0891b2;
+        --accent: #8b5cf6;
+        --glass: rgba(255,255,255,0.03);
+        --shadow: 0 10px 30px rgba(2,6,23,0.6);
+    }
+}
+
+/* App shell */
+html, body {
+    height: 100%;
+    background: linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 90%, var(--surface) 10%) 100%);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color: theme('colors.gray.900', #0f172a);
+}
+
+/* Container layout */
+.container {
+    @apply max-w-sm mx-auto my-8;
+    padding: env(safe-area-inset-top) 1rem env(safe-area-inset-bottom);
+}
+
+/* Calculator card */
+.calculator {
+    background: linear-gradient(180deg, rgba(255,255,255,0.6), var(--surface));
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    border: 1px solid rgba(15,23,42,0.04);
+}
+
+/* Header: title and small actions (theme / install) */
+.calculator .header {
+    @apply flex items-center justify-between px-4 py-3;
+    gap: 0.5rem;
+}
+.app-title {
+    @apply text-sm font-semibold tracking-wide text-gray-700;
+    color: var(--muted);
+}
+.app-subtitle {
+    @apply text-xs text-gray-500;
+}
+
+/* Display (result / expression) */
+.display {
+    @apply px-4 py-3;
+    background: linear-gradient(180deg, rgba(0,0,0,0.02), transparent);
+}
+.display-panel {
+    @apply w-full rounded-lg p-3;
+    background: var(--glass);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.display-value {
+    font-family: var(--display-font);
+    font-weight: 700;
+    font-size: 2.4rem;
+    line-height: 1;
+    text-align: right;
+    color: theme('colors.gray.900', #0f172a);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.display-expression {
+    font-family: Inter, system-ui, -apple-system;
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Buttons area */
+.keypad {
+    @apply p-4;
+    background: transparent;
+}
+
+/* Grid for buttons */
+.keys {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.65rem;
+}
+
+/* Button base */
+.btn {
+    @apply flex items-center justify-center select-none font-semibold;
+    height: 56px;
+    border-radius: 10px;
+    transition: transform 0.08s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+    box-shadow: 0 6px 14px rgba(2,6,23,0.06);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+}
+
+/* Number buttons */
+.btn-num {
+    @apply bg-white text-gray-800;
+    background: linear-gradient(180deg, var(--surface), color-mix(in srgb, var(--surface), black 4%));
+    color: theme('colors.gray.900', #0f172a);
+}
+.btn-num:active,
+.btn-num.btn-pressed {
+    transform: translateY(2px) scale(0.996);
+    box-shadow: 0 3px 8px rgba(2,6,23,0.08) inset;
+}
+
+/* Operator buttons */
+.btn-op {
+    @apply text-white font-bold;
+    background: linear-gradient(180deg, var(--primary), var(--primary-dark));
+    color: white;
+    box-shadow: 0 8px 18px rgba(6,78,101,0.12);
+}
+.btn-op:active,
+.btn-op.btn-pressed {
+    transform: translateY(2px) scale(0.996);
+}
+
+/* Equal button larger and accent */
+.btn-equal {
+    @apply text-white font-extrabold;
+    background: linear-gradient(90deg, var(--accent), var(--primary));
+    height: calc(56px * 2 + 0.65rem);
+    grid-row: span 2;
+    box-shadow: 0 14px 30px rgba(124,58,237,0.14);
+}
+.btn-equal:active,
+.btn-equal.btn-pressed {
+    transform: translateY(2px) scale(0.993);
+}
+
+/* Clear / All clear button */
+.btn-clear {
+    @apply bg-red-100 text-red-600;
+    background: linear-gradient(180deg, rgba(239,68,68,0.06), rgba(239,68,68,0.02));
+    color: var(--danger);
+    font-weight: 700;
+}
+.btn-clear:active,
+.btn-clear.btn-pressed {
+    transform: translateY(2px);
+}
+
+/* Memory and +/- / percent buttons */
+.btn-secondary {
+    @apply bg-gray-100 text-gray-800 font-semibold;
+    background: linear-gradient(180deg, rgba(243,244,246,0.9), rgba(249,250,251,0.8));
+    color: var(--muted);
+}
+.btn-secondary:active,
+.btn-secondary.btn-pressed {
+    transform: translateY(2px);
+}
+
+/* Focus and accessible states */
+.btn:focus {
+    box-shadow: 0 0 0 4px rgba(14,165,233,0.12);
+    outline: none;
+    border-radius: 10px;
+}
+.btn:focus-visible {
+    outline: 2px solid rgba(14,165,233,0.14);
+    outline-offset: 2px;
+}
+
+/* Small variations */
+.btn-small {
+    height: 44px;
+    font-size: 0.95rem;
+}
+
+/* History / memory strip */
+.history {
+    @apply px-4 py-2 text-xs text-gray-500;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.history-list {
+    max-height: 6rem;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+.history-entry {
+    font-family: var(--display-font);
+    font-size: 0.8rem;
+    color: var(--muted);
+    opacity: 0.9;
+}
+
+/* PWA install prompt styling (in-app banner) */
+.pwa-install {
+    @apply fixed left-1/2 transform -translate-x-1/2 bottom-6 z-50 px-4 py-3 rounded-lg flex items-center gap-3;
+    background: linear-gradient(180deg, rgba(255,255,255,0.9), var(--surface));
+    box-shadow: 0 10px 30px rgba(2,6,23,0.12);
+    border: 1px solid rgba(15,23,42,0.04);
+    backdrop-filter: blur(6px);
+}
+.pwa-install .install-btn {
+    @apply ml-2 py-2 px-3 rounded-md text-sm font-semibold;
+    background: var(--primary);
+    color: white;
+}
+.pwa-install .dismiss {
+    @apply ml-2 text-sm text-gray-500;
+}
+
+/* Utility: small help text */
+.help {
+    @apply text-xs text-gray-400 px-4 pb-3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 420px) {
+    .display-value {
+        font-size: 1.8rem;
+    }
+    .keys { gap: 0.45rem; }
+    .btn { height: 50px; border-radius: 9px; }
+    .btn-equal { height: calc(50px * 2 + 0.45rem); }
+}
+
+/* Layout for larger screens */
+@media (min-width: 640px) {
+    .container { @apply max-w-md; }
+    .display-value { font-size: 3rem; }
+    .btn { height: 64px; border-radius: 12px; }
+    .btn-equal { height: calc(64px * 2 + 0.85rem); }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .fade-in {
+        animation: none;
+    }
+    .btn, .btn-op, .btn-num, .btn-equal {
+        transition: none;
+    }
+}
+
+/* Keyboard press visual (for a11y and keyboard users) */
+.btn.keyboard-active {
+    transform: translateY(2px) scale(0.995);
+    box-shadow: 0 4px 10px rgba(2,6,23,0.06) inset;
+}
+
+/* Tiny UI flourish for decimal point and operator emphasis */
+.btn .symbol {
+    @apply text-sm;
+    opacity: 0.95;
+}
+
+/* Safe area for phones with notches */
+.safe-area {
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Legacy compatibility: keep original button classes for existing markup */
+.btn-primary {
+    @apply bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200;
+}
+.btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition-colors duration-200;
+}
+
+/* Small helpers for disabled state */
+.btn[disabled], .btn.disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Tiny split button styles when implementing +/- toggle */
+.toggle {
+    display: inline-flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+/* End of file - calculator-specific styles */
